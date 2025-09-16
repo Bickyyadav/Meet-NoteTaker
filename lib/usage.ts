@@ -69,7 +69,7 @@ export async function getPlanLimits(plan: string): Promise<PlanLimits> {
 }
 
 
-export async function canuserSendBot(userId: string) {
+export async function canUserSendBot(userId: string) {
     const user = await prisma.user.findUnique({
         where: {
             id: userId

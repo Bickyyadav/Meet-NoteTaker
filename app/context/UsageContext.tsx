@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuth } from "@clerk/nextjs"
-import { createContext, ReactNode, useState } from "react"
+import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
 interface PlanLimits {
     meetings: number
@@ -34,7 +34,7 @@ const PLAN_LIMITS: Record<string, PlanLimits> = {
     premium: { meetings: -1, chatMessages: -1 }
 }
 
-const usageContext = createContext<UsageContextType | undefined>(undefined)
+const UsageContext = createContext<UsageContextType | undefined>(undefined)
 
 export function UsageProvide({ children }: { children: ReactNode }) {
     const { userId, isLoaded } = useAuth()
@@ -47,7 +47,7 @@ export function UsageProvide({ children }: { children: ReactNode }) {
         usage.currentPlan !== "free" && usage.subscriptionStatus === "active" && (limits.meetings == -1 || usage.meetingsThisMonth < limits.chatMessages)
     ) : false
 
-    const chatScheduleMeeting = usage ? (
+    const canScheduleMeeting = usage ? (
         usage.currentPlan !== 'free' &&
         usage.subscriptionStatus === 'active' &&
         (limits.meetings === -1 || usage.meetingsThisMonth < limits.meetings)
@@ -89,5 +89,60 @@ export function UsageProvide({ children }: { children: ReactNode }) {
             console.log("🚀 ~ incrementChatUsage ~ error:", error)
         }
     }
+
+    const incrementMeetingUsage = async () => {
+        if (!canScheduleMeeting) {
+            return
+        }
+        try {
+            const response = await fetch("/api/user/increment-meeting", {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json' }
+            })
+            if (response.ok) {
+                setUsage(prev => prev ? { ...prev, meetingsThisMonth: prev.meetingsThisMonth + 1 } : null)
+            }
+        } catch (error) {
+            console.log("🚀 ~ incrementMeetingUsage ~ error:", error)
+
+        }
+
+    }
+
+
+    const refreshUsage = async () => {
+        await fetchUsage()
+    }
+
+
+    useEffect(() => {
+        if (isLoaded && userId) {
+            fetchUsage()
+        } else if (isLoaded && !userId) {
+            setLoading(false)
+        }
+    }, [userId, isLoaded])
+
+
+    return (
+        <UsageContext.Provider value={{
+            usage,
+            loading,
+            canChat,
+            canScheduleMeeting,
+            limits,
+            incrementChatUsage,
+            incrementMeetingUsage,
+            refreshUsage
+        }
+        }>{children}</UsageContext.Provider>
+    )
 }
 
+export function useUsage() {
+    const context = useContext(UsageContext)
+    if (context === undefined) {
+        throw new Error("useUsage must be defined")
+    }
+    return context
+}

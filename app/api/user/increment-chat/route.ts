@@ -31,10 +31,10 @@ export async function POST(request: NextRequest) {
                 upgradeRequired: true
             }, { status: 403 })
         }
-
         await incrementChatUsage(user.id)
         return NextResponse.json({ success: true })
     } catch (error) {
         return NextResponse.json({ error: 'failed to incrmeent usage' }, { status: 500 })
     }
 }
+

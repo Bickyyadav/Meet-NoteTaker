@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { UsageProvide } from "./context/UsageContext";
+import ConditionalLayout from "@/components/conditional-layout";
 
 
 const geistSans = Geist({
@@ -27,9 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning className="dark">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
         >
           <ThemeProvider
             attribute="class"
@@ -37,7 +39,11 @@ export default function RootLayout({
             enableSystem={false}
             disableTransitionOnChange
           ></ThemeProvider>
-          {children}
+          <UsageProvide>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+          </UsageProvide>
         </body>
       </html>
     </ClerkProvider>
