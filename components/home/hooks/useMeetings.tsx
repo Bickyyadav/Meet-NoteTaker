@@ -74,6 +74,7 @@ export function useMeeting() {
                 return
             }
             
+
         } catch (error) {
             setError("failed to fetch calnedar events. please try agan")
             setConnected(false)
