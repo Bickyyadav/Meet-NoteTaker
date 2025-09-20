@@ -65,6 +65,7 @@ export function useMeeting() {
             }
 
             const response = await fetch("/api/meetings/upcoming")
+            console.log("🚀 ~ fetchUpcomingEvents ~ response:", response)
             const result = await response.json()
             if (!response.ok) {
                 setError(result.error || 'Failed to fetch meetings')

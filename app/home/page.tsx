@@ -52,7 +52,6 @@ const Home = () => {
                     />
                 </div>
                 <div className='w-px bg-border'></div>
-
                 <div className='w-96'>
                     <div className='sticky top-6'>
                         <UpcomingMeetings

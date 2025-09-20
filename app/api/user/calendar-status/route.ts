@@ -9,7 +9,6 @@ export async function GET() {
         if (!userId) {
             return NextResponse.json({ connected: false })
         }
-
         const user = await prisma.user.findUnique({
             where: {
                 clerkId: userId
@@ -20,11 +19,10 @@ export async function GET() {
             }
         })
         return NextResponse.json({
-            connected: user?.calendarConnected && !!user.googleAccessToken
+            // connected: user?.calendarConnected && !!user.googleAccessToken
+            connected: user?.calendarConnected && user.googleAccessToken
         })
-
     } catch (error) {
-        console.log("🚀 ~ GET ~ error:", error)
         return NextResponse.json({ connected: false })
 
     }
