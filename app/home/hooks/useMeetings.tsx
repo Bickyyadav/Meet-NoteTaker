@@ -41,14 +41,12 @@ export function useMeeting() {
     const [initialLoading, setInitialLoading] = useState(true)
     const [botToggles, setBotToggles] = useState<{ [key: string]: boolean }>({})
 
-
     useEffect(() => {
         if (userId) {
             fetchUpcomingEvents()
             fetchPastMeetings()
         }
     }, [userId])
-
 
     const fetchUpcomingEvents = async () => {
         setLoading(true)
